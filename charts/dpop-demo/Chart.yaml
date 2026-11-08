@@ -1,0 +1,7 @@
+apiVersion: v2
+name: dpop-demo
+description: DPoP demo (Next.js + .NET) — web e API atrás de um único Ingress
+type: application
+version: 0.1.0
+# appVersion é informativo; as tags reais das imagens vêm de envs/<ambiente>/values.yaml
+appVersion: "1.0.0"

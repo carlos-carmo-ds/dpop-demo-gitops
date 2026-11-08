@@ -1,0 +1,33 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: dpop-demo
+  namespace: argocd
+spec:
+  # Grava a tag nova no Git (fonte da verdade), usando a credencial do repositório
+  # já cadastrada no Argo CD (deploy key SSH com escrita).
+  writeBackConfig:
+    method: git
+    gitConfig:
+      branch: main
+      writeBackTarget: "helmvalues:/envs/dev/values.yaml"
+  applicationRefs:
+    - namePattern: dpop-demo
+      commonUpdateSettings:
+        updateStrategy: semver
+        # Só tags geradas pelo CI (1.0.<run>); ignora sha-<commit>.
+        allowTags: "regexp:^1\\.0\\.[0-9]+$"
+        platforms: ["linux/arm64", "linux/amd64"]
+      images:
+        - alias: api
+          imageName: ghcr.io/carlos-carmo-ds/dpop-demo-api:1.x
+          manifestTargets:
+            helm:
+              name: api.image.repository
+              tag: api.image.tag
+        - alias: web
+          imageName: ghcr.io/carlos-carmo-ds/dpop-demo-web:1.x
+          manifestTargets:
+            helm:
+              name: web.image.repository
+              tag: web.image.tag

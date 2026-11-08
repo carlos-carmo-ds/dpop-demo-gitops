@@ -1,0 +1,28 @@
+{{- if .Values.ingress.enabled }}
+# Web e API no mesmo host: /api/* vai para a API, o resto para o Next.js.
+# Mesmo origin = sem CORS, e o "htu" da prova DPoP bate com Dpop__PublicBaseUrl.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "dpop-demo.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-api
+                port: { name: http }
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-web
+                port: { name: http }
+{{- end }}

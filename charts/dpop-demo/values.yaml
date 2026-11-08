@@ -1,0 +1,32 @@
+# Valores padrão do chart. O que muda por ambiente fica em envs/<ambiente>/values.yaml.
+
+api:
+  image:
+    repository: ghcr.io/carlos-carmo-ds/dpop-demo-api
+    tag: ""            # obrigatório: definido no values do ambiente
+    pullPolicy: IfNotPresent
+  # A API guarda os "jti" das provas DPoP em memória (anti-replay). Com mais de uma réplica,
+  # uma prova poderia ser reutilizada em outro pod: mantenha 1 até usar um cache distribuído.
+  replicas: 1
+  port: 8080
+  # Variáveis de ambiente (formato ASP.NET Core: Secao__Chave).
+  env: {}
+  resources:
+    requests: { cpu: 50m, memory: 96Mi }
+    limits: { memory: 256Mi }
+
+web:
+  image:
+    repository: ghcr.io/carlos-carmo-ds/dpop-demo-web
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 3000
+  resources:
+    requests: { cpu: 50m, memory: 96Mi }
+    limits: { memory: 256Mi }
+
+ingress:
+  enabled: true
+  className: traefik
+  host: dpop.localhost

@@ -1,0 +1,25 @@
+# Ambiente "dev": cluster k3d no Mac (http://dpop.localhost:9080).
+# As tags de imagem abaixo são atualizadas automaticamente pelo Argo CD Image Updater.
+
+api:
+  image:
+    repository: ghcr.io/carlos-carmo-ds/dpop-demo-api
+    tag: "1.0.1"
+  env:
+    # "iss" dos tokens (o que o navegador vê) e audience esperada.
+    Keycloak__Authority: http://localhost:8080/realms/dpop-demo
+    Keycloak__Audience: dpop-api
+    Keycloak__RequireHttpsMetadata: "false"
+    # De onde o pod busca discovery/JWKS: o Keycloak roda no docker compose do Mac.
+    Keycloak__MetadataAddress: http://host.k3d.internal:8080/realms/dpop-demo/.well-known/openid-configuration
+    # URL pública da API como o navegador a chama (conferência do "htu" da prova DPoP).
+    Dpop__PublicBaseUrl: http://dpop.localhost:9080
+    Cors__AllowedOrigins__0: http://dpop.localhost:9080
+
+web:
+  image:
+    repository: ghcr.io/carlos-carmo-ds/dpop-demo-web
+    tag: "1.0.1"
+
+ingress:
+  host: dpop.localhost
